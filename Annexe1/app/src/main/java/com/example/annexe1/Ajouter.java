@@ -19,10 +19,10 @@ public class Ajouter extends AppCompatActivity {
     Button ajouter, menu;
     TextView memo;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_ajouter);
 
         ecouteur = new Ecouteur();
@@ -42,7 +42,7 @@ public class Ajouter extends AppCompatActivity {
                 String tacheAjoutee = memo.getText().toString();
                 Intent intent = new Intent(Ajouter.this, Afficher.class);
                 intent.putExtra("nouvelleTache", tacheAjoutee);
-                //startActivity(intent);
+                startActivity(intent);
             } else if (v == menu) {
                 Intent intent = new Intent(Ajouter.this, MainActivity.class);
                 startActivity(intent);

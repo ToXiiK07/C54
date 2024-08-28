@@ -1,45 +1,43 @@
-package com.example.annexe1;
+package com.example.annexe1
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 
-import androidx.appcompat.app.AppCompatActivity;
+class MainActivity : AppCompatActivity() {
+    lateinit var ajouter: Button
+    lateinit var afficher: Button
+    lateinit var quitter: Button
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
 
-public class MainActivity extends AppCompatActivity {
-    Ecouteur ec;
-    Button ajouter, afficher, quitter;
+        val ec = Ecouteur() // déclaration du type faculatif et pas de new
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        ajouter = findViewById(R.id.ajouter)
+        afficher = findViewById(R.id.afficher)
+        quitter = findViewById(R.id.quitter)
 
-        ec = new Ecouteur();
-
-        ajouter = findViewById(R.id.ajouter);
-        afficher = findViewById(R.id.afficher);
-        quitter = findViewById(R.id.quitter);
-
-        ajouter.setOnClickListener(ec);
-        afficher.setOnClickListener(ec);
-        quitter.setOnClickListener(ec);
-
+        ajouter.setOnClickListener(ec)
+        afficher.setOnClickListener(ec)
+        quitter.setOnClickListener(ec)
     }
 
-    private class Ecouteur implements View.OnClickListener{
-        @Override
-        public void onClick(View v) {
-            if(v == quitter){
-                finish();
-            } else if(v == afficher) {
-                Intent intent = new Intent(MainActivity.this, Afficher.class);
-                startActivity(intent);
-            } else if(v == ajouter) {
-                Intent intent = new Intent(MainActivity.this, Ajouter.class);
-                startActivity(intent);
+    inner class Ecouteur : View.OnClickListener { // inner = class interne
+        override fun onClick(v: View) {
+            if (v === quitter) {
+                finish()
+            } else if (v === afficher) {
+                val intent = Intent(this@MainActivity, Afficher::class.java)
+                startActivity(intent)
+            } else if (v === ajouter) {
+                val intent = Intent(this@MainActivity, Ajouter::class.java)
+                startActivity(intent)
             }
         }
     }
