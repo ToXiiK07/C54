@@ -1,31 +1,33 @@
-package com.example.annexe1;
+package com.example.annexe1
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Spinner;
+import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import androidx.appcompat.app.AppCompatActivity
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.util.Vector
 
-import androidx.appcompat.app.AppCompatActivity;
+class Afficher : AppCompatActivity() {
 
-import java.util.Vector;
+    lateinit var listView: ListView
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_afficher)
 
-public class Afficher extends AppCompatActivity {
-    Vector<String> v = new Vector<>();
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_afficher);
-
-        ListView listView = findViewById(R.id.liste_memo);
-
-        Intent intent = getIntent();
-        String message = intent.getStringExtra("nouvelleTache");
-        if (message != null) {
-            v.add(message);
-        }
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, v);
-        listView.setAdapter(arrayAdapter);
+        listView = findViewById(R.id.liste_memo)
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, lesMemos())
+        listView.setAdapter(arrayAdapter)
+    }
+    fun lesMemos(): Vector<String>
+    {
+        val v = Vector<String>()
+        val fis : FileInputStream = openFileInput("fichier.txt")// append : écrit à la fin du fichier plutot qu'au début
+        val isr = InputStreamReader(fis) // traduit en caractères
+        val br = BufferedReader(isr) // plus rapide
+        br.forEachLine { s -> v.add(s) }
+        br.close()
+        return v
     }
 }

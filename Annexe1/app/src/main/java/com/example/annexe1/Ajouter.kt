@@ -1,51 +1,50 @@
-package com.example.annexe1;
+package com.example.annexe1
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import java.io.BufferedWriter
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+class Ajouter : AppCompatActivity() {
+    lateinit var ajouter: Button
+    lateinit var menu: Button
+    lateinit var memo: TextView
 
-public class Ajouter extends AppCompatActivity {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.enableEdgeToEdge()
+        setContentView(R.layout.activity_ajouter)
 
-    Ecouteur ecouteur;
-    Button ajouter, menu;
-    TextView memo;
+        val ecouteur = Ecouteur()
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_ajouter);
+        ajouter = findViewById(R.id.ajouterTache)
+        menu = findViewById(R.id.menu)
+        memo = findViewById(R.id.tache)
 
-        ecouteur = new Ecouteur();
-
-        ajouter = findViewById(R.id.ajouterTache);
-        menu = findViewById(R.id.menu);
-        memo = findViewById(R.id.tache);
-
-        ajouter.setOnClickListener(ecouteur);
-        menu.setOnClickListener(ecouteur);
+        ajouter.setOnClickListener(ecouteur)
+        menu.setOnClickListener(ecouteur)
     }
 
-    private class Ecouteur implements View.OnClickListener{
-        @Override
-        public void onClick(View v) {
-            if(v == ajouter){
-                String tacheAjoutee = memo.getText().toString();
-                Intent intent = new Intent(Ajouter.this, Afficher.class);
-                intent.putExtra("nouvelleTache", tacheAjoutee);
-                startActivity(intent);
-            } else if (v == menu) {
-                Intent intent = new Intent(Ajouter.this, MainActivity.class);
-                startActivity(intent);
+    inner class Ecouteur : View.OnClickListener {
+        override fun onClick(v: View) {
+            if (v === ajouter) {
+                var tacheAjoutee = memo.text.toString()
+                val fos : FileOutputStream = openFileOutput("fichier.txt", MODE_APPEND) // append : écrit à la fin du fichier plutot qu'au début
+                val osw = OutputStreamWriter(fos) // traduit en caractères
+                val bw = BufferedWriter(osw) // plus rapide
+                bw.write(tacheAjoutee)
+                bw.newLine() // pour changer de ligne
+                bw.close() // fermer le buffer
+                finish() // pour revenir au menu principal
+            } else if (v === menu) {
+                val intent = Intent(this@Ajouter, MainActivity::class.java)
+                startActivity(intent)
             }
         }
     }
