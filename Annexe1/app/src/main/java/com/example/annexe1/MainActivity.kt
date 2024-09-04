@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         val ec = Ecouteur() // déclaration du type faculatif et pas de new
 
+        // initialisation des boutons
         ajouter = findViewById(R.id.ajouter)
         afficher = findViewById(R.id.afficher)
         quitter = findViewById(R.id.quitter)
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         override fun onClick(v: View) {
             if (v === quitter) {
                 finish()
+
             } else if (v === afficher) {
                 val intent = Intent(this@MainActivity, Afficher::class.java)
                 startActivity(intent)

@@ -26,8 +26,9 @@ class Afficher : AppCompatActivity() {
         val fis : FileInputStream = openFileInput("fichier.txt")// append : écrit à la fin du fichier plutot qu'au début
         val isr = InputStreamReader(fis) // traduit en caractères
         val br = BufferedReader(isr) // plus rapide
-        br.forEachLine { s -> v.add(s) }
-        br.close()
+        br.forEachLine { s -> v.add(s) } // itère sur chaque ligne
+        br.close() // ferme le flux
         return v
     }
+
 }
