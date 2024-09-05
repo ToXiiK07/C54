@@ -12,6 +12,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.util.Scanner
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         nbCaractere()
         nbDeC()
         ajouterNom()
+        nbMot()
     }
 
     fun nbLigne(){
@@ -66,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         br.forEachLine {
             it.forEach {
-                if(it == 'c'){
+                if(it == 'c' || it == 'C'){
                     c++
                 }
             }
@@ -83,6 +85,18 @@ class MainActivity : AppCompatActivity() {
         bw.write("Vincent Beaudoin")
         bw.newLine()
         bw.close()
+    }
+
+    // Le délimiteur par défaut est un caractère blanc (espace, tabulation, saut de ligne)
+    fun nbMot() { // avec scanner
+        var compteur = 0
+        val fis : FileInputStream = openFileInput("Fichier1.txt")
+        val sc = Scanner(fis)
+        while (sc.hasNext()) {
+            println(sc.next())
+            compteur++
+        }
+        sc.close()
     }
 
 
