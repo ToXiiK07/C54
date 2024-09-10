@@ -1,7 +1,6 @@
 package com.example.annexe1b
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,10 +12,9 @@ import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.util.Scanner
+import java.util.Vector
 
 class MainActivity : AppCompatActivity() {
-
-    val ec = Ecouteur()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +31,9 @@ class MainActivity : AppCompatActivity() {
         nbDeC()
         ajouterNom()
         nbMot()
+
+        var planet = Planet()
+        planet.nbPlanetes()
     }
 
     fun nbLigne(){
@@ -100,10 +101,22 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    inner class Ecouteur : View.OnClickListener { // inner = class interne
-        override fun onClick(v: View) {
+    inner class Planet {
+        var nomPlanet = ""
+        var nbLunes = 0
 
+        fun nbPlanetes() {
 
+            val vectorPlanetes = Vector<String>();
+            val fis : FileInputStream = openFileInput("Fichier2.txt")
+            val sc = Scanner(fis)
+            while (sc.hasNext()) {
+                val planete = Planet()
+                planete.nomPlanet = sc.next()
+                planete.nbLunes = sc.nextInt()
+                vectorPlanetes.add(planete.toString())
+               // println(sc.next())
+            }
         }
     }
 }

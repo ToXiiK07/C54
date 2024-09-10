@@ -1,0 +1,4 @@
+Mercure 0
+Venus 0
+Terre 1
+Mars 2
