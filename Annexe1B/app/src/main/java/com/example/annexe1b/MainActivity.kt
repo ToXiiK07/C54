@@ -106,7 +106,6 @@ class MainActivity : AppCompatActivity() {
         var nbLunes = 0
 
         fun nbPlanetes() {
-
             val vectorPlanetes = Vector<String>();
             val fis : FileInputStream = openFileInput("Fichier2.txt")
             val sc = Scanner(fis)
@@ -119,4 +118,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    inner class Planete(var nom:String, var nbsat : Int){ // constructeur primaire !!
+
+
+    }
+
 }
