@@ -35,6 +35,14 @@ class MainActivity : AppCompatActivity() {
         afficher.setOnClickListener(ec)
         quitter.setOnClickListener(ec)
 
+        try {
+            val ref = Singleton.getInstance(applicationContext);
+            val temp = ref.deserialiserListe();
+            ref.listeMemo = temp;
+        } catch (e: Exception) {
+            e.printStackTrace();
+        }
+
     }
 
 

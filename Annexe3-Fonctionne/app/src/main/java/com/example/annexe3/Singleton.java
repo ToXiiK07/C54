@@ -1,10 +1,17 @@
 package com.example.annexe3;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 
-import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Singleton {
 
@@ -12,15 +19,16 @@ public class Singleton {
     private ArrayList<Memo> listeMemo;
     private Context context;
 
-    public static Singleton getInstance(){
-        if(instance == null){
-            instance = new Singleton();
-        }
-        return instance;
+    private Singleton(Context context) {
+        listeMemo = new ArrayList<>();
+        this.context = context;
     }
 
-    private Singleton() {
-       listeMemo = new ArrayList<>();
+    public static Singleton getInstance(Context context){
+        if(instance == null){
+            instance = new Singleton(context);
+        }
+        return instance;
     }
 
     public ArrayList<Memo> getListeMemo() {
@@ -30,5 +38,40 @@ public class Singleton {
     public void ajouterMemo(Memo memo){
         listeMemo.add(memo);
     }
+
+    public void setListeMemo(ArrayList<Memo> listeMemo) {
+        this.listeMemo = listeMemo;
+    }
+
+    public void serialiserListe() throws Exception{
+        // try-with -resource
+        try(
+        FileOutputStream fos = context.openFileOutput("fichier.ser", MODE_PRIVATE); // .ser pour dire que c'est sérialisation
+        // buffer special pour objet
+        ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(listeMemo);
+        }
+    }
+
+    public ArrayList<Memo> deserialiserListe() throws Exception {
+        try(FileInputStream fis = context.openFileInput("fichier.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis)) {
+               listeMemo = (ArrayList) ois.readObject();
+               return listeMemo;
+        }
+    }
+
+    public ArrayList<Memo> dedeserialiserListe2() throws Exception {
+        ArrayList<Memo> temp = null;
+        try(FileInputStream fis = context.openFileInput("fichier.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis)) {
+            temp = (ArrayList<Memo>) ois.readObject();
+            return temp;
+        }
+
+
+    }
+
+
 
 }

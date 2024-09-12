@@ -21,7 +21,6 @@ class AjouterActivity : AppCompatActivity() {
     lateinit var date: Button
     lateinit var memo: TextView
     lateinit var dateVue: TextView
-    @RequiresApi(Build.VERSION_CODES.O)
     var dateChoisie: LocalDate = LocalDate.now()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,9 +47,20 @@ class AjouterActivity : AppCompatActivity() {
 
     }
 
+    override fun onStop() {
+        super.onStop()
+        // on veut sérialiser la liste dans un fichier pour
+        // la récupérer quand on va revenir
+        try {
+            Singleton.getInstance(applicationContext).serialiserListe()
+        } catch(e:Exception) {
+            e.printStackTrace()
+        }
+
+
+    }
 
     inner class Ecouteur : View.OnClickListener {
-        @RequiresApi(Build.VERSION_CODES.O)
         override fun onClick(v: View) {
             if (v === menu) {
                 val intent = Intent(this@AjouterActivity, MainActivity::class.java)
@@ -64,8 +74,7 @@ class AjouterActivity : AppCompatActivity() {
                 }
             }else if (v === ajouter) {
                 var tacheAjoutee = memo.text.toString()
-
-                Singleton.getInstance().ajouterMemo(Memo(tacheAjoutee, dateChoisie))
+                Singleton.getInstance(applicationContext).ajouterMemo(Memo(tacheAjoutee, dateChoisie))
 
                 finish() // pour revenir au menu principal
             }
