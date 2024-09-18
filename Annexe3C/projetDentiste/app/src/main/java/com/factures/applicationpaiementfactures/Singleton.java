@@ -46,7 +46,7 @@ public class Singleton {
     }
 
     public  ArrayList<Dent> deserialiserListe() throws Exception {
-        ArrayList<Dent> temp = null;
+        ArrayList<Dent> temp;
         try(FileInputStream fis = context.openFileInput("fichier.ser");
             ObjectInputStream ois = new ObjectInputStream(fis)) {
             temp = (ArrayList<Dent>) ois.readObject();
