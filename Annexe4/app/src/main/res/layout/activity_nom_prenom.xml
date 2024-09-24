@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".NomPrenom"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/prenom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text=""
+        android:hint="Entrez votre prénom"
+        />
+
+    <EditText
+        android:layout_marginTop="50dp"
+        android:id="@+id/nom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text=""
+        android:hint="Entrez votre nom"/>
+
+    <Button
+
+        android:id="@+id/confirmer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirmer"
+        android:layout_marginTop="50dp"/>
+</LinearLayout>
