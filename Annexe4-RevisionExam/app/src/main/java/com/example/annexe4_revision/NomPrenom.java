@@ -38,16 +38,17 @@ public class NomPrenom extends AppCompatActivity {
     }
 
     private class Ecouteur implements View.OnClickListener {
+
         @Override
         public void onClick(View v) {
             if(v == confirmer){
-                Intent intent = new Intent(NomPrenom.this, MainActivity.class);
+                Intent intent = new Intent();
 
                 String n = nom.getText().toString();
                 String p = prenom.getText().toString();
+
                 Utilisateur u = new Utilisateur(n, p);
                 intent.putExtra("utilisateur", u);
-
                 setResult(RESULT_OK, intent);
                 finish();
             }

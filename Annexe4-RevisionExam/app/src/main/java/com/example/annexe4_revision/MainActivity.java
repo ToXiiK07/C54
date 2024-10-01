@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     TextView nomPrenom;
     ActivityResultLauncher<Intent> launcher;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,15 +38,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        ec = new Ecouteur();
 
         launcher  = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityCallBack());
 
-        ec = new Ecouteur();
         connaitre = findViewById(R.id.connaitre);
         nomPrenom = findViewById(R.id.bonjour);
 
         connaitre.setOnClickListener(ec);
-
     }
 
     @Override
@@ -54,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
         outState.putString("nom", nomPrenom.getText().toString());
     }
 
+
     private class ActivityCallBack implements ActivityResultCallback<ActivityResult> {
         @Override
         public void onActivityResult(ActivityResult o) {
-
             Utilisateur utilisateur = (Utilisateur) o.getData().getSerializableExtra("utilisateur");
             String nom = utilisateur.getNom();
             String prenom = utilisateur.getPrenom();
@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             nomPrenom.setText("Bonjour " + nom + " " + prenom);
         }
     }
+
 
 
     private class Ecouteur implements View.OnClickListener{
