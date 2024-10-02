@@ -38,7 +38,6 @@ public class NomPrenom extends AppCompatActivity {
     }
 
     private class Ecouteur implements View.OnClickListener {
-
         @Override
         public void onClick(View v) {
             if(v == confirmer){
@@ -48,7 +47,7 @@ public class NomPrenom extends AppCompatActivity {
                 String p = prenom.getText().toString();
 
                 Utilisateur u = new Utilisateur(n, p);
-                intent.putExtra("utilisateur", u);
+                intent.putExtra("user", u);
                 setResult(RESULT_OK, intent);
                 finish();
             }
