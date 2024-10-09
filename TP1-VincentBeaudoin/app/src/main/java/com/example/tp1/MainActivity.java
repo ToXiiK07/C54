@@ -1,6 +1,5 @@
 package com.example.tp1;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -8,13 +7,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.media3.common.MediaItem;
-import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
@@ -22,29 +18,25 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
     ImageButton retourPlaylistButton, retourMusiqueButton, ancienneChansonButton, playPauseButton, nouvelleChansonButton, avancerMusiqueChanson;
-    TextView nomPlaylistText, nomChansonText, nomArtisteText;
+    TextView nomPlaylistText, nomChansonText, nomArtisteText, tempsChansonText;
     PlayerView playerView;
     SeekBar dureeChanson;
     ExoPlayer exoPlayer;
     Ecouteur ecouteur;
     Vector<Musique> vectorChanson;
     MusiqueListe musiqueListe;
+    Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         // les objets
         ecouteur = new Ecouteur();
         vectorChanson = new Vector<>();
+        random = new Random();
 
         exoPlayer = new ExoPlayer.Builder(getApplicationContext()).build();
         musiqueListe = new MusiqueListe(exoPlayer);
@@ -76,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         nomPlaylistText = findViewById(R.id.titrePlaylist);
         nomChansonText = findViewById(R.id.nomChanson);
         nomArtisteText = findViewById(R.id.nomArtiste);
+        tempsChansonText = findViewById(R.id.tempsChanson);
 
         // les autres
         dureeChanson = findViewById(R.id.seekBar);
@@ -158,30 +152,44 @@ public class MainActivity extends AppCompatActivity {
 //        queue.add(jsonObjectRequest);
     }
 
-
-
-    public void mettreAJourMusique(){
-        Musique musiqueActuelle = musiqueListe.music.get(musiqueListe.currentIndex);
-        nomChansonText.setText(musiqueActuelle.getTitle());
-        nomArtisteText.setText(musiqueActuelle.getArtist());
+    public void updateSongDuration(Musique musiqueActuelle) {
+        long duration = musiqueActuelle.getDuration() * 1000;
+        String durationString = formatDuration(duration);
+        tempsChansonText.setText(durationString);
     }
 
+    private String formatDuration(long duration) {
+        long minutes = (duration / 1000) / 60;
+        long seconds = (duration / 1000) % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    public void mettreAJourMusique(){
+        Musique musiqueActuelle = musiqueListe.music.get(musiqueListe.enCours);
+        nomChansonText.setText(musiqueActuelle.getTitle());
+        nomArtisteText.setText(musiqueActuelle.getArtist());
+        updateSongDuration(musiqueActuelle);
+    }
 
     private class Ecouteur implements View.OnClickListener {
+        private boolean isPlaying = false;
+
         @Override
         public void onClick(View v) {
             if (v == playPauseButton) {
-                playerView.setPlayer(exoPlayer);
-                mettreAJourMusique();
-
-                musiqueListe.jouerMusique(5);
-
                 if (exoPlayer.isPlaying()) {
                     exoPlayer.pause();
                     playPauseButton.setImageResource(android.R.drawable.ic_media_play);
                 } else {
+                    if (!isPlaying) {
+                        int r = random.nextInt(musiqueListe.music.size());
+                        musiqueListe.jouerMusique(r);
+                        playerView.setPlayer(exoPlayer);
+                        isPlaying = true;
+                    }
                     exoPlayer.play();
                     playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+                    mettreAJourMusique();
                 }
             } else if (v == nouvelleChansonButton) {
                 musiqueListe.prochaineChanson();
@@ -189,8 +197,13 @@ public class MainActivity extends AppCompatActivity {
             } else if (v == ancienneChansonButton) {
                 musiqueListe.ancienneChanson();
                 mettreAJourMusique();
+            } else if (v == avancerMusiqueChanson) {
+                musiqueListe.avancerTemps(10000); // 10 secondes
+                mettreAJourMusique();
+            } else if(v == retourMusiqueButton) {
+                musiqueListe.reculerTemps(10000);
+                mettreAJourMusique();
             }
         }
     }
-
 }
