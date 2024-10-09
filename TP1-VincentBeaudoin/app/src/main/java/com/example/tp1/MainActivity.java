@@ -1,6 +1,7 @@
 package com.example.tp1;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
@@ -29,7 +31,7 @@ import java.util.Vector;
 public class MainActivity extends AppCompatActivity {
 
     ImageButton retourPlaylistButton, retourMusiqueButton, ancienneChansonButton, playPauseButton, nouvelleChansonButton, avancerMusiqueChanson;
-    TextView nomPlaylistText, nomChansonText, nomArtisteText, tempsChansonText;
+    TextView nomPlaylistText, nomChansonText, nomArtisteText, tempsChansonText, avancementChansonText;
     PlayerView playerView;
     SeekBar dureeChanson;
     ExoPlayer exoPlayer;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     Vector<Musique> vectorChanson;
     MusiqueListe musiqueListe;
     Random random;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +56,20 @@ public class MainActivity extends AppCompatActivity {
         ecouteur = new Ecouteur();
         vectorChanson = new Vector<>();
         random = new Random();
+        handler = new Handler();
 
         exoPlayer = new ExoPlayer.Builder(getApplicationContext()).build();
         musiqueListe = new MusiqueListe(exoPlayer);
+
+        exoPlayer.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                if (playbackState == Player.STATE_ENDED) {
+                    musiqueListe.prochaineChanson();
+                    mettreAJourMusique();
+                }
+            }
+        });
 
         // les boutons
         retourMusiqueButton = findViewById(R.id.retourMusiqueButton);
@@ -64,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         playPauseButton = findViewById(R.id.playPauseButton);
         nouvelleChansonButton = findViewById(R.id.nouvelleChansonButton);
         avancerMusiqueChanson = findViewById(R.id.avancerMusiqueChanson);
+        avancementChansonText = findViewById(R.id.avancementChanson);
 
         // les textViews
         nomPlaylistText = findViewById(R.id.titrePlaylist);
@@ -150,7 +165,20 @@ public class MainActivity extends AppCompatActivity {
 //            });
 //
 //        queue.add(jsonObjectRequest);
+
     }
+
+    Runnable updateTemps = new Runnable() {
+        @Override
+        public void run() {
+            long currentPosition = exoPlayer.getCurrentPosition();
+            avancementChansonText.setText(formatDuration(currentPosition));
+
+            //dureeChanson.setProgress((int) (currentPosition / 100));
+
+            handler.postDelayed(this, 200);
+        }
+    };
 
     public void updateSongDuration(Musique musiqueActuelle) {
         long duration = musiqueActuelle.getDuration() * 1000;
@@ -164,12 +192,18 @@ public class MainActivity extends AppCompatActivity {
         return String.format("%02d:%02d", minutes, seconds);
     }
 
+
     public void mettreAJourMusique(){
         Musique musiqueActuelle = musiqueListe.music.get(musiqueListe.enCours);
         nomChansonText.setText(musiqueActuelle.getTitle());
         nomArtisteText.setText(musiqueActuelle.getArtist());
+       // dureeChanson.setMax((int) exoPlayer.getDuration() * 1000);
+
+
         updateSongDuration(musiqueActuelle);
     }
+
+
 
     private class Ecouteur implements View.OnClickListener {
         private boolean isPlaying = false;
@@ -180,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 if (exoPlayer.isPlaying()) {
                     exoPlayer.pause();
                     playPauseButton.setImageResource(android.R.drawable.ic_media_play);
+                    handler.removeCallbacks(updateTemps); // arrete de update le timer
                 } else {
                     if (!isPlaying) {
                         int r = random.nextInt(musiqueListe.music.size());
@@ -190,12 +225,13 @@ public class MainActivity extends AppCompatActivity {
                     exoPlayer.play();
                     playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
                     mettreAJourMusique();
+                    handler.post(updateTemps); // update le timer
                 }
             } else if (v == nouvelleChansonButton) {
-                musiqueListe.prochaineChanson();
+                musiqueListe.prochaineChanson(); // avance de une chanson
                 mettreAJourMusique();
             } else if (v == ancienneChansonButton) {
-                musiqueListe.ancienneChanson();
+                musiqueListe.ancienneChanson(); // recule de une chanson
                 mettreAJourMusique();
             } else if (v == avancerMusiqueChanson) {
                 musiqueListe.avancerTemps(10000); // 10 secondes
