@@ -37,6 +37,7 @@ dependencies {
     implementation (libs.media3.ui)
     implementation (libs.media3.common)
     implementation(libs.volley)
+    implementation (libs.google.gson)
 
     implementation(libs.appcompat)
     implementation(libs.material)

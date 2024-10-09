@@ -1,52 +1,77 @@
 package com.example.tp1;
 
 public class Musique {
-    private String nomArtiste;
-    private String nomChanson;
-    private String nomAlbum;
+
+    private String id;
+    private String title;
+    private String album;
+    private String artist;
     private String genre;
-    private int temps;
+    private String source;
     private String image;
-    private String chanson;
+    private String trackNumber;
+    private String totalTrackCount;
+    private int duration;
+    private String site;
+
+
+
+
+
 
     public Musique(Builder builder){
         this.genre = builder.genre;
-        this.nomAlbum = builder.nomAlbum;
-        this.nomArtiste = builder.nomArtiste;
-        this.nomChanson = builder.nomChanson;
-        this.temps = Integer.parseInt(builder.temps);
+        this.album = builder.nomAlbum;
+        this.artist = builder.nomArtiste;
+        this.title = builder.nomChanson;
+        this.duration = Integer.parseInt(builder.temps);
         this.image = builder.image;
-        this.chanson = builder.chanson;
+        this.source = builder.chanson;
     }
 
-    public String getNomArtiste() {
-        return nomArtiste;
+    public String getId() {
+        return id;
     }
 
-    public String getChanson() {
-        return chanson;
+    public String getTitle() {
+        return title;
     }
 
-    public String getNomChanson() {
-        return nomChanson;
+    public String getAlbum() {
+        return album;
     }
 
-    public String getNomAlbum() {
-        return nomAlbum;
+    public String getArtist() {
+        return artist;
     }
 
     public String getGenre() {
         return genre;
     }
 
-    public int getTemps() {
-        return temps;
+    public String getSource() {
+        return source;
     }
 
     public String getImage() {
         return image;
     }
 
+    public String getTrackNumber() {
+        return trackNumber;
+    }
+
+    public String getTotalTrackCount() {
+        return totalTrackCount;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public String getSite() {
+        return site;
+    }
 
     public static class Builder {
         private String nomArtiste;
