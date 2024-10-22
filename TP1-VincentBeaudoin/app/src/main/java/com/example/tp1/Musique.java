@@ -14,11 +14,6 @@ public class Musique {
     private int duration;
     private String site;
 
-
-
-
-
-
     public Musique(Builder builder){
         this.genre = builder.genre;
         this.album = builder.nomAlbum;

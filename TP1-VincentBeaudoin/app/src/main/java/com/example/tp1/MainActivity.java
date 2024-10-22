@@ -1,5 +1,6 @@
 package com.example.tp1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ExoPlayer exoPlayer;
     Ecouteur ecouteur;
     Vector<Musique> vectorChanson;
-    MusiqueListe musiqueListe;
+    GestionMusique gestionMusique;
     Random random;
     Handler handler;
 
@@ -59,13 +60,13 @@ public class MainActivity extends AppCompatActivity {
         handler = new Handler();
 
         exoPlayer = new ExoPlayer.Builder(getApplicationContext()).build();
-        musiqueListe = new MusiqueListe(exoPlayer);
+        gestionMusique = new GestionMusique(exoPlayer);
 
         exoPlayer.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 if (playbackState == Player.STATE_ENDED) {
-                    musiqueListe.prochaineChanson();
+                    gestionMusique.prochaineChanson();
                     mettreAJourMusique();
                 }
             }
@@ -107,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 Gson gson = new GsonBuilder().create();
 
-                MusiqueListe temp = gson.fromJson(response, MusiqueListe.class);
-                musiqueListe.music = temp.music;
+                GestionMusique temp = gson.fromJson(response, GestionMusique.class);
+                gestionMusique.music = temp.music;
             }
             }, new Response.ErrorListener() {
                 @Override
@@ -194,16 +195,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void mettreAJourMusique(){
-        Musique musiqueActuelle = musiqueListe.music.get(musiqueListe.enCours);
+        Musique musiqueActuelle = gestionMusique.music.get(gestionMusique.enCours);
         nomChansonText.setText(musiqueActuelle.getTitle());
         nomArtisteText.setText(musiqueActuelle.getArtist());
        // dureeChanson.setMax((int) exoPlayer.getDuration() * 1000);
 
-
         updateSongDuration(musiqueActuelle);
     }
-
-
 
     private class Ecouteur implements View.OnClickListener {
         private boolean isPlaying = false;
@@ -217,8 +215,8 @@ public class MainActivity extends AppCompatActivity {
                     handler.removeCallbacks(updateTemps); // arrete de update le timer
                 } else {
                     if (!isPlaying) {
-                        int r = random.nextInt(musiqueListe.music.size());
-                        musiqueListe.jouerMusique(r);
+                        int r = random.nextInt(gestionMusique.music.size());
+                        gestionMusique.jouerMusique(r);
                         playerView.setPlayer(exoPlayer);
                         isPlaying = true;
                     }
@@ -228,17 +226,20 @@ public class MainActivity extends AppCompatActivity {
                     handler.post(updateTemps); // update le timer
                 }
             } else if (v == nouvelleChansonButton) {
-                musiqueListe.prochaineChanson(); // avance de une chanson
+                gestionMusique.prochaineChanson(); // avance de une chanson
                 mettreAJourMusique();
             } else if (v == ancienneChansonButton) {
-                musiqueListe.ancienneChanson(); // recule de une chanson
+                gestionMusique.ancienneChanson(); // recule de une chanson
                 mettreAJourMusique();
             } else if (v == avancerMusiqueChanson) {
-                musiqueListe.avancerTemps(10000); // 10 secondes
+                gestionMusique.avancerTemps(10000); // 10 secondes
                 mettreAJourMusique();
             } else if(v == retourMusiqueButton) {
-                musiqueListe.reculerTemps(10000);
+                gestionMusique.reculerTemps(10000);
                 mettreAJourMusique();
+            } else if(v == retourPlaylistButton) {
+                Intent intent = new Intent(MainActivity.this, PlaylistActivity.class);
+                startActivity(intent);
             }
         }
     }

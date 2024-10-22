@@ -3,17 +3,16 @@ package com.example.tp1;
 import android.net.Uri;
 
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import java.util.List;
 
-public class MusiqueListe {
+public class GestionMusique {
     List<Musique> music;
     ExoPlayer exoPlayer;
     int enCours;
 
-    public MusiqueListe(ExoPlayer exoPlayer) {
+    public GestionMusique(ExoPlayer exoPlayer) {
         this.exoPlayer = exoPlayer;
     }
 
