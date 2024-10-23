@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
+import java.util.Random;
 
 import java.util.List;
 
@@ -11,18 +12,19 @@ public class GestionMusique {
     List<Musique> music;
     ExoPlayer exoPlayer;
     int enCours;
+    Random random = new Random();
 
     public GestionMusique(ExoPlayer exoPlayer) {
         this.exoPlayer = exoPlayer;
     }
 
     public void jouerMusique(int i){
-            enCours = i;
-            String r = music.get(i).getSource();
-            MediaItem mediaItem = MediaItem.fromUri(Uri.parse(r));
-            exoPlayer.setMediaItem(mediaItem);
-            exoPlayer.prepare();
-            exoPlayer.play();
+        enCours = i;
+        String r = music.get(i).getSource();
+        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(r));
+        exoPlayer.setMediaItem(mediaItem);
+        exoPlayer.prepare();
+        exoPlayer.play();
     }
 
     public void prochaineChanson() {
@@ -62,5 +64,11 @@ public class GestionMusique {
         exoPlayer.seekTo(nouvellePosition);
     }
 
+    public void shuffleMusique(){
+        int r = random.nextInt(music.size());
 
+        // ... vérifier si la chanson est terminer
+
+        jouerMusique(r);
+    }
 }

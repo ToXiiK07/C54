@@ -24,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+
 import com.google.gson.GsonBuilder;
 
 import java.util.Random;
@@ -31,7 +32,7 @@ import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton retourPlaylistButton, retourMusiqueButton, ancienneChansonButton, playPauseButton, nouvelleChansonButton, avancerMusiqueChanson;
+    ImageButton retourPlaylistButton, retourMusiqueButton, ancienneChansonButton, playPauseButton, nouvelleChansonButton, avancerMusiqueChanson, shuffleButton, repeatButton;
     TextView nomPlaylistText, nomChansonText, nomArtisteText, tempsChansonText, avancementChansonText;
     PlayerView playerView;
     SeekBar dureeChanson;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         exoPlayer = new ExoPlayer.Builder(getApplicationContext()).build();
         gestionMusique = new GestionMusique(exoPlayer);
 
+        // si on passe à travers de toutes les musiques, on recommence du début
         exoPlayer.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         nouvelleChansonButton = findViewById(R.id.nouvelleChansonButton);
         avancerMusiqueChanson = findViewById(R.id.avancerMusiqueChanson);
         avancementChansonText = findViewById(R.id.avancementChanson);
+        shuffleButton = findViewById(R.id.boutonShuffle);
+        repeatButton = findViewById(R.id.boutonRepeat);
 
         // les textViews
         nomPlaylistText = findViewById(R.id.titrePlaylist);
@@ -99,7 +103,14 @@ public class MainActivity extends AppCompatActivity {
         playPauseButton.setOnClickListener(ecouteur);
         nouvelleChansonButton.setOnClickListener(ecouteur);
         avancerMusiqueChanson.setOnClickListener(ecouteur);
+        shuffleButton.setOnClickListener(ecouteur);
+        repeatButton.setOnClickListener(ecouteur);
 
+
+
+        // METTRE DANS LE MODÈLE
+
+        // la requête
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://api.jsonbin.io/v3/b/661ab8b1acd3cb34a837f284?meta=false";
 
@@ -175,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             long currentPosition = exoPlayer.getCurrentPosition();
             avancementChansonText.setText(formatDuration(currentPosition));
 
-            //dureeChanson.setProgress((int) (currentPosition / 100));
+            // dureeChanson.setProgress((int) (currentPosition / 100));
 
             handler.postDelayed(this, 200);
         }
@@ -205,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class Ecouteur implements View.OnClickListener {
         private boolean isPlaying = false;
+        private boolean isShuffled = false;
 
         @Override
         public void onClick(View v) {
@@ -215,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
                     handler.removeCallbacks(updateTemps); // arrete de update le timer
                 } else {
                     if (!isPlaying) {
-                        int r = random.nextInt(gestionMusique.music.size());
-                        gestionMusique.jouerMusique(r);
+                        // int r = random.nextInt(gestionMusique.music.size());
+                        gestionMusique.jouerMusique(0);
                         playerView.setPlayer(exoPlayer);
                         isPlaying = true;
                     }
@@ -226,10 +238,17 @@ public class MainActivity extends AppCompatActivity {
                     handler.post(updateTemps); // update le timer
                 }
             } else if (v == nouvelleChansonButton) {
-                gestionMusique.prochaineChanson(); // avance de une chanson
+                gestionMusique.prochaineChanson();
+                if(!exoPlayer.isPlaying()) {
+                    exoPlayer.play();
+                    playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+                    mettreAJourMusique();
+                }
+                // avance de une chanson
                 mettreAJourMusique();
             } else if (v == ancienneChansonButton) {
-                gestionMusique.ancienneChanson(); // recule de une chanson
+                gestionMusique.ancienneChanson();
+                exoPlayer.play(); // recule de une chanson
                 mettreAJourMusique();
             } else if (v == avancerMusiqueChanson) {
                 gestionMusique.avancerTemps(10000); // 10 secondes
@@ -240,6 +259,10 @@ public class MainActivity extends AppCompatActivity {
             } else if(v == retourPlaylistButton) {
                 Intent intent = new Intent(MainActivity.this, PlaylistActivity.class);
                 startActivity(intent);
+            } else if(v == shuffleButton) {
+                gestionMusique.shuffleMusique();
+                mettreAJourMusique();
+                isShuffled = true;
             }
         }
     }
