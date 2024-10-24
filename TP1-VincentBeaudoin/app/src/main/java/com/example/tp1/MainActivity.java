@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         exoPlayer = new ExoPlayer.Builder(getApplicationContext()).build();
         gestionMusique = new GestionMusique(exoPlayer);
-        Modele modele = new Modele();
+        Modele modele = new Modele(MainActivity.this);
 
         // si on passe à travers de toutes les musiques, on recommence du début
         exoPlayer.addListener(new Player.Listener() {
@@ -111,26 +111,28 @@ public class MainActivity extends AppCompatActivity {
 
         // METTRE DANS LE MODÈLE
 
+        modele.genererChangementValeur();
 
-        // la requête
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://api.jsonbin.io/v3/b/661ab8b1acd3cb34a837f284?meta=false";
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Gson gson = new GsonBuilder().create();
-
-                GestionMusique temp = gson.fromJson(response, GestionMusique.class);
-                gestionMusique.music = temp.music;
-            }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                }
-        });
-        queue.add(stringRequest);
+//        // la requête
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//        String url = "https://api.jsonbin.io/v3/b/661ab8b1acd3cb34a837f284?meta=false";
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                Gson gson = new GsonBuilder().create();
+//
+//                GestionMusique temp = gson.fromJson(response, GestionMusique.class);
+//                gestionMusique.music = temp.music;
+//            }
+//            }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//
+//                }
+//        });
+//        queue.add(stringRequest);
 
 //        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
 //            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
