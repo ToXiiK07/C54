@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         exoPlayer = new ExoPlayer.Builder(getApplicationContext()).build();
         gestionMusique = new GestionMusique(exoPlayer);
+        Modele modele = new Modele();
 
         // si on passe à travers de toutes les musiques, on recommence du début
         exoPlayer.addListener(new Player.Listener() {
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // METTRE DANS LE MODÈLE
+
 
         // la requête
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -191,6 +193,22 @@ public class MainActivity extends AppCompatActivity {
             handler.postDelayed(this, 200);
         }
     };
+
+    // pour la seekBar
+
+//    public void genererChangementValeur()
+//    {
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Thread() {
+//            int compteur = 0;
+//            @Override
+//            public void run() {
+//                compteur++;
+//                setValeur(compteur);
+//                handler.postDelayed(this, 2000); // changement de valeur
+//            }
+//        }, 5000); // la méthode run s'exécutera après un délai de 5000 ms
+//    }
 
     public void updateSongDuration(Musique musiqueActuelle) {
         long duration = musiqueActuelle.getDuration() * 1000;
