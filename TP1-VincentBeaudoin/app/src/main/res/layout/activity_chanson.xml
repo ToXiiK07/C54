@@ -12,7 +12,7 @@
     <ListView
         android:id="@+id/liste_chansons"
         android:layout_width="match_parent"
-        android:layout_height="600dp" />
+        android:layout_height="623dp" />
 
     <Button
         android:id="@+id/retourPlaylist"

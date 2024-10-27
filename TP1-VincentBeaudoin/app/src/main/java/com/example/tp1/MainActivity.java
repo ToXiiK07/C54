@@ -17,18 +17,9 @@ import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-
-import com.google.gson.GsonBuilder;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,10 +29,13 @@ public class MainActivity extends AppCompatActivity {
     SeekBar dureeChanson;
     ExoPlayer exoPlayer;
     Ecouteur ecouteur;
-    Vector<Musique> vectorChanson;
+    List<Musique> musiqueList;
     GestionMusique gestionMusique;
     Random random;
     Handler handler;
+    Singleton singleton;
+    Modele modele;
+    private boolean isPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +50,22 @@ public class MainActivity extends AppCompatActivity {
 
         // les objets
         ecouteur = new Ecouteur();
-        vectorChanson = new Vector<>();
         random = new Random();
         handler = new Handler();
 
-        exoPlayer = new ExoPlayer.Builder(getApplicationContext()).build();
-        gestionMusique = new GestionMusique(exoPlayer);
-        Modele modele = new Modele(MainActivity.this);
+        gestionMusique = new GestionMusique(this);
+        singleton = Singleton.getInstance(this);
+
+        modele = new Modele(MainActivity.this, gestionMusique);
+        modele.chargerPlaylist();
+
+        musiqueList = new ArrayList<>(modele.getListeMusiques());
+        gestionMusique.music = musiqueList;
+
+        modele.initialiserMusique();
 
         // si on passe à travers de toutes les musiques, on recommence du début
-        exoPlayer.addListener(new Player.Listener() {
+        singleton.getExoPlayer().addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 if (playbackState == Player.STATE_ENDED) {
@@ -108,109 +108,61 @@ public class MainActivity extends AppCompatActivity {
         repeatButton.setOnClickListener(ecouteur);
 
 
+        Intent intent = getIntent();
+        int pos = intent.getIntExtra("position", -1);
 
-        // METTRE DANS LE MODÈLE
+        if (pos != -1) {
+            isPlaying = true;
+            gestionMusique.enCours = pos;
+            gestionMusique.jouerMusique(pos);
 
-        modele.genererChangementValeur();
+            playerView.setPlayer(singleton.getExoPlayer());
+
+            mettreAJourMusique();
+            playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+            handler.post(updateTemps);
+        }
 
 
-//        // la requête
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        String url = "https://api.jsonbin.io/v3/b/661ab8b1acd3cb34a837f284?meta=false";
+//        try {
+//            singleton.desirialiserListe();
+//            gestionMusique.enCours = singleton.getChansonEnCours();
 //
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                Gson gson = new GsonBuilder().create();
-//
-//                GestionMusique temp = gson.fromJson(response, GestionMusique.class);
-//                gestionMusique.music = temp.music;
-//            }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//
-//                }
-//        });
-//        queue.add(stringRequest);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-//            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-//                @Override
-//                public void onResponse(JSONObject response)
-//                {
-//                    try {
-//                       // Gson gson = new GsonBuilder().create();
-//
-//                        JSONArray tab = (JSONArray) response.get("music");
-//                        JSONObject chanson;
-//                        for (int i = 0; i < tab.length(); i++) {
-//                            chanson = tab.getJSONObject(i);
-//
-//                            String nomChansonAPI = (String) chanson.get("title");
-//                            String nomArtisteAPI = (String) chanson.get("artist");
-//                            String imageAPI = (String) chanson.get("image");
-//                            String nomAlbumAPI = (String) chanson.get("album");
-//                            String genreAPI = (String) chanson.get("genre");
-//                            int tempsAPI = (Integer) chanson.get("duration");
-//                            String chansonAPI = (String) chanson.get("source");
-//
-//                            Musique musique = new Musique.Builder()
-//                                    .setNomChanson(nomChansonAPI)
-//                                    .setNomArtiste(nomArtisteAPI)
-//                                    .setImage(imageAPI)
-//                                    .setNomAlbum(nomAlbumAPI)
-//                                    .setGenre(genreAPI)
-//                                    .setTemps(tempsAPI)
-//                                    .setChanson(chansonAPI)
-//                                    .build();
-//
-//                            vectorChanson.add(musique);
-//
-//                        }
-//                    } catch (JSONException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//
-//                }
-//
-//            });
-//
-//        queue.add(jsonObjectRequest);
+        dureeChanson.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    singleton.getExoPlayer().seekTo(progress);
+                }
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     Runnable updateTemps = new Runnable() {
         @Override
         public void run() {
-            long currentPosition = exoPlayer.getCurrentPosition();
+            long currentPosition =   singleton.getExoPlayer().getCurrentPosition();
             avancementChansonText.setText(formatDuration(currentPosition));
 
-            // dureeChanson.setProgress((int) (currentPosition / 100));
+            dureeChanson.setProgress((int) currentPosition);
 
             handler.postDelayed(this, 200);
         }
     };
-
-    // pour la seekBar
-
-//    public void genererChangementValeur()
-//    {
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Thread() {
-//            int compteur = 0;
-//            @Override
-//            public void run() {
-//                compteur++;
-//                setValeur(compteur);
-//                handler.postDelayed(this, 2000); // changement de valeur
-//            }
-//        }, 5000); // la méthode run s'exécutera après un délai de 5000 ms
-//    }
 
     public void updateSongDuration(Musique musiqueActuelle) {
         long duration = musiqueActuelle.getDuration() * 1000;
@@ -224,66 +176,76 @@ public class MainActivity extends AppCompatActivity {
         return String.format("%02d:%02d", minutes, seconds);
     }
 
-
     public void mettreAJourMusique(){
         Musique musiqueActuelle = gestionMusique.music.get(gestionMusique.enCours);
         nomChansonText.setText(musiqueActuelle.getTitle());
         nomArtisteText.setText(musiqueActuelle.getArtist());
-       // dureeChanson.setMax((int) exoPlayer.getDuration() * 1000);
+        long duration = musiqueActuelle.getDuration() * 1000; // durée en millisecondes
+        dureeChanson.setMax((int) duration);
 
         updateSongDuration(musiqueActuelle);
     }
 
     private class Ecouteur implements View.OnClickListener {
-        private boolean isPlaying = false;
-        private boolean isShuffled = false;
-
         @Override
         public void onClick(View v) {
             if (v == playPauseButton) {
-                if (exoPlayer.isPlaying()) {
-                    exoPlayer.pause();
+                if (singleton.getExoPlayer().isPlaying()) {
+                    singleton.getExoPlayer().pause();
                     playPauseButton.setImageResource(android.R.drawable.ic_media_play);
                     handler.removeCallbacks(updateTemps); // arrete de update le timer
                 } else {
                     if (!isPlaying) {
-                        // int r = random.nextInt(gestionMusique.music.size());
-                        gestionMusique.jouerMusique(0);
-                        playerView.setPlayer(exoPlayer);
+                        gestionMusique.jouerMusique(gestionMusique.enCours);
+                        playerView.setPlayer(singleton.getExoPlayer());
                         isPlaying = true;
                     }
-                    exoPlayer.play();
+                    singleton.getExoPlayer().play();
                     playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
                     mettreAJourMusique();
                     handler.post(updateTemps); // update le timer
                 }
             } else if (v == nouvelleChansonButton) {
                 gestionMusique.prochaineChanson();
-                if(!exoPlayer.isPlaying()) {
-                    exoPlayer.play();
-                    playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
-                    mettreAJourMusique();
-                }
-                // avance de une chanson
+                singleton.getExoPlayer().play();
+                playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+                handler.post(updateTemps);
                 mettreAJourMusique();
             } else if (v == ancienneChansonButton) {
                 gestionMusique.ancienneChanson();
-                exoPlayer.play(); // recule de une chanson
+                singleton.getExoPlayer().play(); // recule de une chanson
+                playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+                handler.post(updateTemps);
                 mettreAJourMusique();
             } else if (v == avancerMusiqueChanson) {
                 gestionMusique.avancerTemps(10000); // 10 secondes
+                handler.post(updateTemps);
                 mettreAJourMusique();
             } else if(v == retourMusiqueButton) {
                 gestionMusique.reculerTemps(10000);
+                handler.post(updateTemps);
                 mettreAJourMusique();
             } else if(v == retourPlaylistButton) {
                 Intent intent = new Intent(MainActivity.this, PlaylistActivity.class);
                 startActivity(intent);
             } else if(v == shuffleButton) {
                 gestionMusique.shuffleMusique();
-                mettreAJourMusique();
-                isShuffled = true;
+                mettreAJourMusique();;
             }
         }
     }
+
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        try {
+//            singleton.setChansonEnCours(gestionMusique.getChansonEnCours());
+//            long position = exoPlayer.getCurrentPosition();
+//            singleton.setPositionChanson(position);
+//            singleton.serialiserListe();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
 }

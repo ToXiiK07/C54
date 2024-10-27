@@ -38,20 +38,30 @@ public class PlaylistActivity extends AppCompatActivity {
 
         retourMenu.setOnClickListener(ec);
         pl1.setOnClickListener(ec);
+        pl2.setOnClickListener(ec);
+        pl3.setOnClickListener(ec);
 
     }
     private class Ecouteur implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-
-            if(v == retourMenu){
+            if (v == retourMenu) {
                 Intent intent = new Intent(PlaylistActivity.this, MainActivity.class);
                 startActivity(intent);
-            } else if(v == pl1) {
+            } else if (v == pl1) {
                 Intent intent = new Intent(PlaylistActivity.this, ChansonActivity.class);
+                intent.putExtra("playlist_id", "pl1");
                 startActivity(intent);
-
+            } else if (v == pl2) {
+                Intent intent = new Intent(PlaylistActivity.this, ChansonActivity.class);
+                intent.putExtra("playlist_id", "pl2");
+                startActivity(intent);
+            } else if (v == pl3) {
+                Intent intent = new Intent(PlaylistActivity.this, ChansonActivity.class);
+                intent.putExtra("playlist_id", "pl3");
+                startActivity(intent);
             }
         }
+
     }
 }

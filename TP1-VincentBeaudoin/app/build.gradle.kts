@@ -39,6 +39,9 @@ dependencies {
     implementation(libs.volley)
     implementation (libs.google.gson)
 
+    implementation(libs.github.glide)
+    annotationProcessor(libs.compiler)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

@@ -1,9 +1,14 @@
 package com.example.tp1;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Random;
 
 import java.util.List;
@@ -12,10 +17,9 @@ public class GestionMusique {
     List<Musique> music;
     ExoPlayer exoPlayer;
     int enCours;
-    Random random = new Random();
 
-    public GestionMusique(ExoPlayer exoPlayer) {
-        this.exoPlayer = exoPlayer;
+    public GestionMusique(Context context) {
+        this.exoPlayer = Singleton.getInstance(context).getExoPlayer();
     }
 
     public void jouerMusique(int i){
@@ -64,11 +68,18 @@ public class GestionMusique {
         exoPlayer.seekTo(nouvellePosition);
     }
 
-    public void shuffleMusique(){
-        int r = random.nextInt(music.size());
-
-        // ... vérifier si la chanson est terminer
-
-        jouerMusique(r);
+    public void shuffleMusique() {
+        Collections.shuffle(music);
+        enCours = 0;
+        jouerMusique(enCours);
     }
+
+    public void repeterChanson() {
+
+    }
+
+    public List<Musique> getMusic() {
+        return music;
+    }
+
 }

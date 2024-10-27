@@ -1,48 +1,37 @@
 package com.example.tp1;
 
-import android.os.Handler;
+import android.content.Context;
 
-import androidx.media3.exoplayer.ExoPlayer;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.List;
 
 public class Modele {
+    private Singleton singleton;
+    private GestionMusique gestionMusique;
 
-    RequestQueue queue = Volley.newRequestQueue(this);
-    String url = "https://api.jsonbin.io/v3/b/661ab8b1acd3cb34a837f284?meta=false";
-
-    public Modele() {
-        genererChangementValeur();
+    public Modele(Context context, GestionMusique gestionMusique) {
+        this.singleton = Singleton.getInstance(context);
+        this.gestionMusique = gestionMusique;
+        chargerPlaylist();
     }
 
-    public void genererChangementValeur()
-    {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+    public void chargerPlaylist() {
+        singleton.chargerMusique(new MusiqueCallback() {
             @Override
-            public void onResponse(String response) {
-                Gson gson = new GsonBuilder().create();
-
-                // faire un Singleton pour passer à tout le monde
-
-                GestionMusique temp = gson.fromJson(response, GestionMusique.class);
-                gestionMusique.music = temp.music;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
+            public void onMusiqueCharger(List<Musique> listeMusique) {
+                gestionMusique.music = listeMusique;
             }
         });
-
-        queue.add(stringRequest);
-
     }
 
+
+    public List<Musique> getListeMusiques() {
+        return singleton.getListeMusique();
+    }
+
+    public void initialiserMusique() {
+        List<Musique> listeMusiques = getListeMusiques();
+        gestionMusique.music = listeMusiques;
+    }
 }
+
+
