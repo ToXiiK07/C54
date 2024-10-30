@@ -109,9 +109,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        int pos = intent.getIntExtra("position", -1);
+        int pos = intent.getIntExtra("position", 0);
 
-        if (pos != -1) {
+        if (pos != 0) {
             isPlaying = true;
             gestionMusique.enCours = pos;
             gestionMusique.jouerMusique(pos);
