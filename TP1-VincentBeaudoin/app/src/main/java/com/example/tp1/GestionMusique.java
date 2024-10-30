@@ -82,4 +82,7 @@ public class GestionMusique {
         return music;
     }
 
+    public int getEnCours() {
+        return enCours;
+    }
 }

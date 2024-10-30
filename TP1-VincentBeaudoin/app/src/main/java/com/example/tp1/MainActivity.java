@@ -140,14 +140,19 @@ public class MainActivity extends AppCompatActivity {
             handler.post(updateTemps);
         }
 
-
-//        try {
-//            singleton.desirialiserListe();
-//            gestionMusique.enCours = singleton.getChansonEnCours();
+        try {
+            singleton.desirialiserListe();
+//            isPlaying = true;
 //
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+//            playerView.setPlayer(singleton.getExoPlayer());
+//
+//            mettreAJourMusique();
+//            playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+//            //handler.post(updateTemps);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         dureeChanson.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -278,17 +283,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        try {
-//            singleton.setChansonEnCours(gestionMusique.getChansonEnCours());
-//            long position = exoPlayer.getCurrentPosition();
-//            singleton.setPositionChanson(position);
-//            singleton.serialiserListe();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            singleton.setChansonEnCours(gestionMusique.getEnCours());
+            long position = singleton.getExoPlayer().getCurrentPosition();
+            singleton.setPositionChanson(position);
+            singleton.serialiserListe();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

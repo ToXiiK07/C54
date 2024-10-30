@@ -54,7 +54,7 @@ public class Singleton {
         return exoPlayer;
     }
 
-    public void chargerMusique(final MusiqueCallback callback) {
+    public void chargerMusique(MusiqueCallback callback) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -101,13 +101,27 @@ public class Singleton {
 
     public void desirialiserListe() throws Exception {
         try (FileInputStream fis = context.openFileInput("musique_data.ser");
+
              ObjectInputStream ois = new ObjectInputStream(fis)) {
+
             chansonEnCours = ois.readInt();
+            System.out.println("chanson en cours : " + chansonEnCours);
+
             positionChanson = ois.readLong();
-            exoPlayer.seekTo(chansonEnCours, positionChanson);
-            exoPlayer.prepare();
-            exoPlayer.play();
+            System.out.println("position de la chanson : " + positionChanson);
+
+            chargerMusique(new MusiqueCallback() {
+                @Override
+                public void onMusiqueCharger(List<Musique> listeMusique) {
+                    if (chansonEnCours >= 0 && chansonEnCours < listeMusique.size()) {
+                        exoPlayer.seekTo(chansonEnCours, positionChanson);
+                        exoPlayer.prepare();
+                        exoPlayer.play();
+                    }
+                }
+            });
 
         }
     }
+
 }
