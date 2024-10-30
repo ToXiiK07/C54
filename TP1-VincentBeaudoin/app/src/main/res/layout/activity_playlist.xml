@@ -91,13 +91,12 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:layout_margin="5dp"
-        android:background="@android:color/holo_red_light"
+        android:background="#FF9800"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp"
-        >
+        android:padding="10dp">
 
         <ImageView
             android:id="@+id/imageView3"
@@ -117,15 +116,35 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/retourMenu"
+    <LinearLayout
+        android:id="@+id/playlist_4"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="200dp"
-        android:layout_weight="0"
-        android:backgroundTint="#434343"
+        android:layout_height="75dp"
+        android:layout_margin="5dp"
+        android:background="@android:color/holo_red_light"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        >
 
-        android:text="Retour à la musique"
-        android:textColor="@android:color/white" />
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/playlist4" />
+
+        <TextView
+            android:id="@+id/playlist_4_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:text="Almost Fire"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+    </LinearLayout>
+
 </LinearLayout>

@@ -3,8 +3,8 @@ package com.example.tp1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,8 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class PlaylistActivity extends AppCompatActivity {
 
-    LinearLayout pl1, pl2, pl3;
-    Button retourMenu;
+    LinearLayout pl1, pl2, pl3, pl4;
+    TextView pl1_text, pl2_text, pl3_text, pl4_text;
     Ecouteur ec;
 
     @Override
@@ -30,35 +30,44 @@ public class PlaylistActivity extends AppCompatActivity {
         });
 
         ec = new Ecouteur();
-
-        retourMenu = findViewById(R.id.retourMenu);
         pl1 = findViewById(R.id.playlist_1);
         pl2 = findViewById(R.id.playlist_2);
         pl3 = findViewById(R.id.playlist_3);
+        pl4 = findViewById(R.id.playlist_4);
 
-        retourMenu.setOnClickListener(ec);
+        pl1_text = findViewById(R.id.playlist_1_text);
+        pl2_text = findViewById(R.id.playlist_2_text);
+        pl3_text = findViewById(R.id.playlist_3_text);
+        pl4_text = findViewById(R.id.playlist_4_text);
+
         pl1.setOnClickListener(ec);
         pl2.setOnClickListener(ec);
         pl3.setOnClickListener(ec);
+        pl4.setOnClickListener(ec);
 
     }
     private class Ecouteur implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if (v == retourMenu) {
-                Intent intent = new Intent(PlaylistActivity.this, MainActivity.class);
-                startActivity(intent);
-            } else if (v == pl1) {
+            if (v == pl1) {
                 Intent intent = new Intent(PlaylistActivity.this, ChansonActivity.class);
                 intent.putExtra("playlist_id", "pl1");
+                intent.putExtra("playlist_name", pl1_text.getText().toString());
                 startActivity(intent);
             } else if (v == pl2) {
                 Intent intent = new Intent(PlaylistActivity.this, ChansonActivity.class);
                 intent.putExtra("playlist_id", "pl2");
+                intent.putExtra("playlist_name", pl2_text.getText().toString());
                 startActivity(intent);
             } else if (v == pl3) {
                 Intent intent = new Intent(PlaylistActivity.this, ChansonActivity.class);
                 intent.putExtra("playlist_id", "pl3");
+                intent.putExtra("playlist_name", pl3_text.getText().toString());
+                startActivity(intent);
+            }  else if (v == pl4) {
+                Intent intent = new Intent(PlaylistActivity.this, ChansonActivity.class);
+                intent.putExtra("playlist_id", "pl4");
+                intent.putExtra("playlist_name", pl4_text.getText().toString());
                 startActivity(intent);
             }
         }

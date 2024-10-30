@@ -1,6 +1,7 @@
 package com.example.tp1;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -9,6 +10,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,7 +28,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton retourPlaylistButton, retourMusiqueButton, ancienneChansonButton, playPauseButton, nouvelleChansonButton, avancerMusiqueChanson, shuffleButton, repeatButton;
+    ImageButton retourPlaylistButton, retourMusiqueButton, ancienneChansonButton, playPauseButton, nouvelleChansonButton, avancerMusiqueChanson, shuffleButton, repeatButton, parametersButton;
     TextView nomPlaylistText, nomChansonText, nomArtisteText, tempsChansonText, avancementChansonText;
     PlayerView playerView;
     SeekBar dureeChanson;
@@ -35,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
     Handler handler;
     Singleton singleton;
     Modele modele;
+    AudioManager audioManager;
     private boolean isPlaying = false;
+    ActivityResultLauncher<Intent> launcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         ecouteur = new Ecouteur();
         random = new Random();
         handler = new Handler();
+
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         gestionMusique = new GestionMusique(this);
         singleton = Singleton.getInstance(this);
@@ -75,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityCallBack());
+
         // les boutons
         retourMusiqueButton = findViewById(R.id.retourMusiqueButton);
         retourPlaylistButton = findViewById(R.id.retourPlaylistButton);
@@ -85,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         avancementChansonText = findViewById(R.id.avancementChanson);
         shuffleButton = findViewById(R.id.boutonShuffle);
         repeatButton = findViewById(R.id.boutonRepeat);
+        parametersButton = findViewById(R.id.parameterButton);
 
         // les textViews
         nomPlaylistText = findViewById(R.id.titrePlaylist);
@@ -106,10 +118,15 @@ public class MainActivity extends AppCompatActivity {
         avancerMusiqueChanson.setOnClickListener(ecouteur);
         shuffleButton.setOnClickListener(ecouteur);
         repeatButton.setOnClickListener(ecouteur);
+        parametersButton.setOnClickListener(ecouteur);
 
 
         Intent intent = getIntent();
         int pos = intent.getIntExtra("position", 0);
+
+        String playlist = intent.getStringExtra("playlist");
+        nomPlaylistText.setText(playlist);
+
 
         if (pos != 0) {
             isPlaying = true;
@@ -137,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     singleton.getExoPlayer().seekTo(progress);
+                    long currentPosition =  singleton.getExoPlayer().getCurrentPosition();
+                    avancementChansonText.setText(formatDuration(currentPosition));
                 }
             }
 
@@ -151,18 +170,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    Runnable updateTemps = new Runnable() {
-        @Override
-        public void run() {
-            long currentPosition =   singleton.getExoPlayer().getCurrentPosition();
-            avancementChansonText.setText(formatDuration(currentPosition));
-
-            dureeChanson.setProgress((int) currentPosition);
-
-            handler.postDelayed(this, 200);
-        }
-    };
 
     public void updateSongDuration(Musique musiqueActuelle) {
         long duration = musiqueActuelle.getDuration() * 1000;
@@ -185,6 +192,37 @@ public class MainActivity extends AppCompatActivity {
 
         updateSongDuration(musiqueActuelle);
     }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+
+    private class ActivityCallBack implements ActivityResultCallback<ActivityResult> {
+        @Override
+        public void onActivityResult(ActivityResult o) {
+            int volumeLevel = o.getData().getIntExtra("VOLUME_LEVEL", 0);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeLevel, 0);
+        }
+    }
+
+
+
+    Runnable updateTemps = new Runnable() {
+        @Override
+        public void run() {
+            long currentPosition =   singleton.getExoPlayer().getCurrentPosition();
+            avancementChansonText.setText(formatDuration(currentPosition));
+
+            dureeChanson.setProgress((int) currentPosition);
+
+            handler.postDelayed(this, 200);
+        }
+    };
+
 
     private class Ecouteur implements View.OnClickListener {
         @Override
@@ -231,6 +269,11 @@ public class MainActivity extends AppCompatActivity {
             } else if(v == shuffleButton) {
                 gestionMusique.shuffleMusique();
                 mettreAJourMusique();;
+            } else if(v == parametersButton) {
+
+                Intent intent = new Intent(MainActivity.this, ParametersActivity.class);
+                launcher.launch(intent);
+
             }
         }
     }

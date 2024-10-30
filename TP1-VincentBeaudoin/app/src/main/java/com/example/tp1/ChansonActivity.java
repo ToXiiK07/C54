@@ -19,14 +19,17 @@ import androidx.media3.exoplayer.ExoPlayer;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Random;
 
 public class ChansonActivity extends AppCompatActivity {
 
     ListView listView;
     Button retourPlaylist;
     Ecouteur ec;
+    String nomPlaylist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,8 @@ public class ChansonActivity extends AppCompatActivity {
         ec = new Ecouteur();
 
         String playlistId = getIntent().getStringExtra("playlist_id");
+        nomPlaylist = getIntent().getStringExtra("playlist_name");
+
 
         afficherMusique(playlistId);
 
@@ -98,6 +103,25 @@ public class ChansonActivity extends AppCompatActivity {
                         vector.add(temp);
                     }
                 }
+            } else if (playlistId.equals("pl4")) {
+                Random r = new Random();
+                HashSet<Musique> uniqueMusics = new HashSet<>();
+
+                while (uniqueMusics.size() < 10 && uniqueMusics.size() < listeMusique.size()) {
+                    Musique musique = listeMusique.get(r.nextInt(listeMusique.size()));
+                    uniqueMusics.add(musique);
+                }
+
+                int i = 1;
+                for (Musique musique : uniqueMusics) {
+                    Hashtable<String, Object> temp = new Hashtable<>();
+                    temp.put("position", String.valueOf(i));
+                    temp.put("nom", musique.getTitle());
+                    temp.put("artiste", musique.getArtist());
+                    temp.put("image", musique.getImage());
+                    vector.add(temp);
+                    i++;
+                }
             }
 
             SimpleAdapter adapter = new SimpleAdapter(this, vector, R.layout.chanson,
@@ -113,6 +137,7 @@ public class ChansonActivity extends AppCompatActivity {
             listView.setOnItemClickListener((parent, view, position, id) -> {
                 Intent intent = new Intent(ChansonActivity.this, MainActivity.class);
                 intent.putExtra("position", position);
+                intent.putExtra("playlist", nomPlaylist);
                 startActivity(intent);
             });
 
