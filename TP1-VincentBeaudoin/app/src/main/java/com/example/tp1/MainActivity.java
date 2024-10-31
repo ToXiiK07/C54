@@ -140,19 +140,19 @@ public class MainActivity extends AppCompatActivity {
             handler.post(updateTemps);
         }
 
-        try {
-            singleton.desirialiserListe();
-//            isPlaying = true;
+//        try {
+//            singleton.desirialiserListe();
+////            isPlaying = true;
+////
+////            playerView.setPlayer(singleton.getExoPlayer());
+////
+////            mettreAJourMusique();
+////            playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
+////            //handler.post(updateTemps);
 //
-//            playerView.setPlayer(singleton.getExoPlayer());
-//
-//            mettreAJourMusique();
-//            playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
-//            //handler.post(updateTemps);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
         dureeChanson.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

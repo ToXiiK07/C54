@@ -30,7 +30,7 @@ public class Singleton {
     private int chansonEnCours;
     private long positionChanson;
     private ExoPlayer exoPlayer;
-    private static final String URL = "https://api.jsonbin.io/v3/b/661ab8b1acd3cb34a837f284?meta=false";
+    private static final String URL = "https://api.jsonbin.io/v3/b/6723b430e41b4d34e44bfa92?meta=false";
 
     private Singleton(Context context) {
         this.context = context.getApplicationContext();
