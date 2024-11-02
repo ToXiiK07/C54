@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 public class Singleton {
@@ -30,12 +31,14 @@ public class Singleton {
     private int chansonEnCours;
     private long positionChanson;
     private ExoPlayer exoPlayer;
+    Hashtable<String, Object> musique;
+    private boolean dejaLoader = false;
     private static final String URL = "https://api.jsonbin.io/v3/b/6723b430e41b4d34e44bfa92?meta=false";
 
     private Singleton(Context context) {
-        this.context = context.getApplicationContext();
+        this.context = context;
         listeMusique = new ArrayList<>();
-        queue = Volley.newRequestQueue(this.context);
+        queue = Volley.newRequestQueue(context);
         gson = new GsonBuilder().create();
 
         if(exoPlayer == null) {
@@ -46,6 +49,7 @@ public class Singleton {
     public static Singleton getInstance(Context context) {
         if (instance == null) {
             instance = new Singleton(context);
+
         }
         return instance;
     }
@@ -60,7 +64,7 @@ public class Singleton {
             public void onResponse(String response) {
                 GestionMusique temp = gson.fromJson(response, GestionMusique.class);
                 listeMusique = temp.getMusic();
-                System.out.println("liste de musique : " + listeMusique.size());
+                System.out.println("CONTENU DE LISTE MUSIQUE : " + listeMusique.size());
                 if (callback != null) {
                     callback.onMusiqueCharger(listeMusique);
                 }
@@ -74,6 +78,13 @@ public class Singleton {
         queue.add(stringRequest);
     }
 
+    public boolean isDejaLoader() {
+        return dejaLoader;
+    }
+
+    public void setDejaLoader(boolean dejaLoader) {
+        this.dejaLoader = dejaLoader;
+    }
 
     public List<Musique> getListeMusique() {
         return listeMusique;
@@ -87,41 +98,24 @@ public class Singleton {
         this.positionChanson = positionChanson;
     }
 
-    public int getChansonEnCours() {
-        return chansonEnCours;
-    }
-
     public void serialiserListe() throws Exception {
+
+        musique = new Hashtable<>();
+        musique.put("index", chansonEnCours);
+        musique.put("position", positionChanson);
+
         try (FileOutputStream fos = context.openFileOutput("musique_data.ser", Context.MODE_PRIVATE);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-            oos.writeInt(chansonEnCours);
-            oos.writeLong(positionChanson);
+            oos.writeObject(musique);
         }
     }
 
-    public void desirialiserListe() throws Exception {
+    public Hashtable<String, Object> desirialiserListe() throws Exception {
         try (FileInputStream fis = context.openFileInput("musique_data.ser");
-
              ObjectInputStream ois = new ObjectInputStream(fis)) {
 
-            chansonEnCours = ois.readInt();
-            System.out.println("chanson en cours : " + chansonEnCours);
-
-            positionChanson = ois.readLong();
-            System.out.println("position de la chanson : " + positionChanson);
-
-            chargerMusique(new MusiqueCallback() {
-                @Override
-                public void onMusiqueCharger(List<Musique> listeMusique) {
-                    if (chansonEnCours >= 0 && chansonEnCours < listeMusique.size()) {
-                        exoPlayer.seekTo(chansonEnCours, positionChanson);
-                        exoPlayer.prepare();
-                        exoPlayer.play();
-                    }
-                }
-            });
-
+            musique = (Hashtable<String, Object>) ois.readObject();
         }
+        return musique;
     }
-
 }

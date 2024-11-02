@@ -69,13 +69,20 @@ public class GestionMusique {
     }
 
     public void shuffleMusique() {
-        Collections.shuffle(music);
-        enCours = 0;
-        jouerMusique(enCours);
+        if (exoPlayer.getShuffleModeEnabled()) {
+            exoPlayer.setShuffleModeEnabled(false);
+        } else {
+            exoPlayer.setShuffleModeEnabled(true);
+        }
     }
 
-    public void repeterChanson() {
 
+    public void repeterChanson() {
+        if(exoPlayer.getRepeatMode() == Player.REPEAT_MODE_ONE) {
+            exoPlayer.setRepeatMode(Player.REPEAT_MODE_OFF);
+        } else {
+            exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
+        }
     }
 
     public List<Musique> getMusic() {

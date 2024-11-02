@@ -40,8 +40,8 @@
         android:id="@+id/titrePlaylist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Almost Fire"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:text="All Songs" />
 
     <androidx.media3.ui.PlayerView
         android:id="@+id/player_view"

@@ -135,8 +135,12 @@ public class ChansonActivity extends AppCompatActivity {
             listView.setAdapter(adapter);
 
             listView.setOnItemClickListener((parent, view, position, id) -> {
+
+                Hashtable<String, Object> chansonSelectionnee = vector.get(position);
+                String nomChanson = (String) chansonSelectionnee.get("nom");
+
                 Intent intent = new Intent(ChansonActivity.this, MainActivity.class);
-                intent.putExtra("position", position);
+                intent.putExtra("nom_chanson", nomChanson);
                 intent.putExtra("playlist", nomPlaylist);
                 startActivity(intent);
             });
