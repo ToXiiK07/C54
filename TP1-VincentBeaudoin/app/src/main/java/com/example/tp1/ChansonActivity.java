@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
+import java.util.Vector;
 
 public class ChansonActivity extends AppCompatActivity {
 
@@ -60,9 +61,9 @@ public class ChansonActivity extends AppCompatActivity {
         singleton.chargerMusique(listeMusique -> {
             List<Hashtable<String, Object>> vector = new ArrayList<>();
 
+            // ajout de toutes les chansons dans la playlist 1
             if(playlistId.equals("pl1")) {
                 for (int i = 0; i < listeMusique.size(); i++) {
-
                     Musique musique = listeMusique.get(i);
                     Hashtable<String, Object> temp = new Hashtable<>();
 
@@ -73,9 +74,9 @@ public class ChansonActivity extends AppCompatActivity {
 
                     vector.add(temp);
                 }
+                // ajout de toutes les chansons The Kyoto Connection dans la playlist 2
             } else if(playlistId.equals("pl2")) {
                 for (int i = 0; i < listeMusique.size(); i++) {
-
                     Musique musique = listeMusique.get(i);
 
                     if ("The Kyoto Connection".equals(musique.getArtist())) {
@@ -88,9 +89,9 @@ public class ChansonActivity extends AppCompatActivity {
                         vector.add(temp);
                     }
                 }
+                // ajout de toutes les chansons de Letter Box et Pixies dans la playlist 3
             } else if(playlistId.equals("pl3")) {
                 for (int i = 0; i < listeMusique.size(); i++) {
-
                     Musique musique = listeMusique.get(i);
 
                     if ("Letter Box".equals(musique.getArtist()) || "Pixies".equals(musique.getArtist())) {
@@ -103,9 +104,10 @@ public class ChansonActivity extends AppCompatActivity {
                         vector.add(temp);
                     }
                 }
+                // ajout de 10 chansons random dans la playlist 4
             } else if (playlistId.equals("pl4")) {
                 Random r = new Random();
-                HashSet<Musique> uniqueMusics = new HashSet<>();
+                Vector<Musique> uniqueMusics = new Vector<>();
 
                 while (uniqueMusics.size() < 10 && uniqueMusics.size() < listeMusique.size()) {
                     Musique musique = listeMusique.get(r.nextInt(listeMusique.size()));
@@ -124,6 +126,7 @@ public class ChansonActivity extends AppCompatActivity {
                 }
             }
 
+            // ajouter les chansons au listView
             SimpleAdapter adapter = new SimpleAdapter(this, vector, R.layout.chanson,
                     new String[]{"position", "nom", "artiste", "image"},
                     new int[]{R.id.textPosition, R.id.textNom, R.id.textArtiste, R.id.imageChanson}) {
@@ -134,6 +137,7 @@ public class ChansonActivity extends AppCompatActivity {
             };
             listView.setAdapter(adapter);
 
+            // quand une chanson une cliqué, la renvoyé au main
             listView.setOnItemClickListener((parent, view, position, id) -> {
 
                 Hashtable<String, Object> chansonSelectionnee = vector.get(position);

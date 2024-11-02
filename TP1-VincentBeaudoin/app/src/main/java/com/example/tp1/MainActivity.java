@@ -1,6 +1,8 @@
 package com.example.tp1;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +21,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.media3.common.Player;
-import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         random = new Random();
         handler = new Handler();
 
+        // pour gérer le volume
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         gestionMusique = new GestionMusique(this);
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         modele.initialiserMusique();
 
-        // si on passe à travers de toutes les musiques, on recommence du début
+        // si on passe à travers de toutes les musiques, on recommence au début du vecteur
         singleton.getExoPlayer().addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // le launcher pour le boomerang
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityCallBack());
 
         // les boutons
@@ -122,15 +125,16 @@ public class MainActivity extends AppCompatActivity {
         parametersButton.setOnClickListener(ecouteur);
 
         // Pour desirialiser la chanson
-        if(!singleton.isDejaLoader()) {
+        if(!singleton.isDejaLoader()) { // vérifie si les chansons ont déjà été loadé
             singleton.chargerMusique(new MusiqueCallback() {
                 @Override
                 public void onMusiqueCharger(List<Musique> musiques) {
                     try {
-                        Hashtable<String, Object> musiqueData = singleton.desirialiserListe();
-                        int chanson = (Integer) musiqueData.get("index");
-                        long position = (Long) musiqueData.get("position");
-                        if (chanson >= 0 && chanson < gestionMusique.music.size()) {
+                        Hashtable<String, Object> musiqueData = singleton.deserialiserListe();
+                        int chanson = (Integer) musiqueData.get("index"); // récupére la chanson
+                        long position = (Long) musiqueData.get("position"); // récupére sa position
+                        if (chanson >= 0 && chanson < gestionMusique.music.size()) { // vérifie que le vecteur ne soit pas vide
+                            // joue la musique et gère tout le UI
                             gestionMusique.jouerMusique(chanson);
                             singleton.getExoPlayer().seekTo(position);
                             playerView.setPlayer(singleton.getExoPlayer());
@@ -158,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         int pos = -1;
         for (int i = 0; i < gestionMusique.music.size(); i++) {
             if (gestionMusique.music.get(i).getTitle().equals(nomChanson)) {
-                pos = i;
+                pos = i; // pour que la position soit recherché avec le nom et soit comparé avec tout les autres titres
                 break;
             }
         }
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         dureeChanson.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
+                if (fromUser) { // si on bouge la seekBar, alors on modifie l'état du exoplayer
                     singleton.getExoPlayer().seekTo(progress);
                     long currentPosition =  singleton.getExoPlayer().getCurrentPosition();
                     avancementChansonText.setText(formatDuration(currentPosition));
@@ -198,19 +202,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Pour le UI
+    // pour updater le temps d'une chanson
     public void updateSongDuration(Musique musiqueActuelle) {
         long duration = musiqueActuelle.getDuration() * 1000;
         String durationString = formatDuration(duration);
         tempsChansonText.setText(durationString);
     }
 
+    // pour cast le format du temps depuis un long
     private String formatDuration(long duration) {
         long minutes = (duration / 1000) / 60;
         long seconds = (duration / 1000) % 60;
         return String.format("%02d:%02d", minutes, seconds);
     }
 
+    // fonctionnel principal qui modifie le UI
     public void mettreAJourMusique(){
         Musique musiqueActuelle = gestionMusique.music.get(gestionMusique.enCours);
         nomChansonText.setText(musiqueActuelle.getTitle());
@@ -225,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
     }
 
     private class ActivityCallBack implements ActivityResultCallback<ActivityResult> {
@@ -236,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Pour le text du temps en dessous de la seekBar
+    // Pour modifier le texte du temps de la chanson
     Runnable updateTemps = new Runnable() {
         @Override
         public void run() {
@@ -253,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
     private class Ecouteur implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            // si on appuie sur play/pause
             if (v == playPauseButton) {
                 if (singleton.getExoPlayer().isPlaying()) {
                     singleton.getExoPlayer().pause();
@@ -269,42 +275,61 @@ public class MainActivity extends AppCompatActivity {
                     mettreAJourMusique();
                     handler.post(updateTemps); // update le timer
                 }
+                // si on change de chanson
             } else if (v == nouvelleChansonButton) {
                 gestionMusique.prochaineChanson();
                 singleton.getExoPlayer().play();
                 playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
                 handler.post(updateTemps);
                 mettreAJourMusique();
+                // si on recule de chanson
             } else if (v == ancienneChansonButton) {
                 gestionMusique.ancienneChanson();
                 singleton.getExoPlayer().play(); // recule de une chanson
                 playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
                 handler.post(updateTemps);
                 mettreAJourMusique();
+                // si on avance de 10 secondes
             } else if (v == avancerMusiqueChanson) {
                 gestionMusique.avancerTemps(10000); // 10 secondes
                 handler.post(updateTemps);
                 mettreAJourMusique();
+                // si on recule de 10 secondes
             } else if(v == retourMusiqueButton) {
                 gestionMusique.reculerTemps(10000);
                 handler.post(updateTemps);
                 mettreAJourMusique();
+                // pour avoir accès à toutes les playlist
             } else if(v == retourPlaylistButton) {
                 Intent intent = new Intent(MainActivity.this, PlaylistActivity.class);
                 startActivity(intent);
+                // pour shuffle les chansons
             } else if(v == shuffleButton) {
                 gestionMusique.shuffleMusique();
-                mettreAJourMusique();;
+                mettreAJourMusique();
+                if (singleton.getExoPlayer().getShuffleModeEnabled()) {
+                    shuffleButton.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
+                } else {
+                    shuffleButton.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+                }
+                // avoir accès au boomerang pour modifier le son
             } else if(v == parametersButton) {
                 Intent intent = new Intent(MainActivity.this, ParametersActivity.class);
                 launcher.launch(intent);
+                // pour refaire jouer une chanson en boucle
             } else if(v == repeatButton) {
                 gestionMusique.repeterChanson();
                 mettreAJourMusique();
+                if (singleton.getExoPlayer().getRepeatMode() == Player.REPEAT_MODE_ONE) {
+                    repeatButton.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
+                } else {
+                    repeatButton.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+                }
             }
         }
     }
 
+    // pour sérialiser une chanson lorsqu'on ferme l'application
     @Override
     protected void onStop() {
         super.onStop();

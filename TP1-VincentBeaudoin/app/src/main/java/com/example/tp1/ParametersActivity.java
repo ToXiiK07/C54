@@ -40,6 +40,7 @@ public class ParametersActivity extends AppCompatActivity {
         volumeSeekBar.setMax(maxVolume);
         volumeSeekBar.setProgress(volumeLevel);
 
+        // Pour envoyé le volume au main
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

@@ -35,6 +35,7 @@ public class Singleton {
     private boolean dejaLoader = false;
     private static final String URL = "https://api.jsonbin.io/v3/b/6723b430e41b4d34e44bfa92?meta=false";
 
+    // constructeur du Singleton
     private Singleton(Context context) {
         this.context = context;
         listeMusique = new ArrayList<>();
@@ -42,7 +43,7 @@ public class Singleton {
         gson = new GsonBuilder().create();
 
         if(exoPlayer == null) {
-            exoPlayer =  new ExoPlayer.Builder(context).build();
+            exoPlayer =  new ExoPlayer.Builder(context).build(); // le seul Exoplayer de toute l'application
         }
     }
 
@@ -58,12 +59,14 @@ public class Singleton {
         return exoPlayer;
     }
 
+    // Pour charger les musiques initalement
+    // J'ai besoin du callback pour s'assurer que toutes les musiques ont loader avant de les jouer
     public void chargerMusique(MusiqueCallback callback) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 GestionMusique temp = gson.fromJson(response, GestionMusique.class);
-                listeMusique = temp.getMusic();
+                listeMusique = temp.getMusic(); // ajoute toutes les musiques à une List
                 System.out.println("CONTENU DE LISTE MUSIQUE : " + listeMusique.size());
                 if (callback != null) {
                     callback.onMusiqueCharger(listeMusique);
@@ -98,6 +101,7 @@ public class Singleton {
         this.positionChanson = positionChanson;
     }
 
+    // Pour sérialiser une chanson
     public void serialiserListe() throws Exception {
 
         musique = new Hashtable<>();
@@ -110,7 +114,8 @@ public class Singleton {
         }
     }
 
-    public Hashtable<String, Object> desirialiserListe() throws Exception {
+    // Pour désérialiser une chanson
+    public Hashtable<String, Object> deserialiserListe() throws Exception {
         try (FileInputStream fis = context.openFileInput("musique_data.ser");
              ObjectInputStream ois = new ObjectInputStream(fis)) {
 

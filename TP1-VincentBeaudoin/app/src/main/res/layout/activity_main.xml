@@ -156,7 +156,7 @@
             android:layout_width="75dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:backgroundTint="#BABABA"
+            android:backgroundTint="#FF0000"
             android:scaleType="fitCenter"
             app:srcCompat="@android:drawable/stat_notify_sync_noanim" />
 
@@ -165,7 +165,7 @@
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:backgroundTint="#BABABA"
+            android:backgroundTint="#FF0000"
             android:scaleType="fitCenter"
             app:srcCompat="@android:drawable/ic_menu_revert" />
     </LinearLayout>
