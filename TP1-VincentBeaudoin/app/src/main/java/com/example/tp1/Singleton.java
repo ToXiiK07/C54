@@ -50,7 +50,6 @@ public class Singleton {
     public static Singleton getInstance(Context context) {
         if (instance == null) {
             instance = new Singleton(context);
-
         }
         return instance;
     }
@@ -101,7 +100,7 @@ public class Singleton {
         this.positionChanson = positionChanson;
     }
 
-    // Pour sérialiser une chanson
+    // pour sérialiser une chanson
     public void serialiserListe() throws Exception {
 
         musique = new Hashtable<>();
@@ -114,7 +113,7 @@ public class Singleton {
         }
     }
 
-    // Pour désérialiser une chanson
+    // pour désérialiser une chanson
     public Hashtable<String, Object> deserialiserListe() throws Exception {
         try (FileInputStream fis = context.openFileInput("musique_data.ser");
              ObjectInputStream ois = new ObjectInputStream(fis)) {

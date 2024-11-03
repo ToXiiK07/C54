@@ -254,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
     private class Ecouteur implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -338,8 +337,15 @@ public class MainActivity extends AppCompatActivity {
             long position = singleton.getExoPlayer().getCurrentPosition();
             singleton.setPositionChanson(position);
             singleton.serialiserListe();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onDestroy() { // pour fermer l'exo player de manière correcte
+        super.onDestroy();
+        singleton.getExoPlayer().release();
     }
 }

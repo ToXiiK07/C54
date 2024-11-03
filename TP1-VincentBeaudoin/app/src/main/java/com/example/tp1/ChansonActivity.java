@@ -148,7 +148,6 @@ public class ChansonActivity extends AppCompatActivity {
                 intent.putExtra("playlist", nomPlaylist);
                 startActivity(intent);
             });
-
         });
     }
 
