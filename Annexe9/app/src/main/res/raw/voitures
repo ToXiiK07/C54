@@ -1,0 +1,44 @@
+{
+    "voitures": [
+        {
+            "nom": "Toyota Camry",
+            "prix": 29000
+        },
+        {
+            "nom": "Honda Civic",
+            "prix": 27000
+        },
+        {
+            "nom": "Ford Mustang",
+            "prix": 42000
+        },
+        {
+            "nom": "Chevrolet Silverado",
+            "prix": 55000
+        },
+        {
+            "nom": "Tesla Model 3",
+            "prix": 55000
+        },
+        {
+            "nom": "Hyundai Elantra",
+            "prix": 26000
+        },
+        {
+            "nom": "BMW Serie 3",
+            "prix": 58000
+        },
+        {
+            "nom": "Mercedes-Benz Classe C",
+            "prix": 62000
+        },
+        {
+            "nom": "Volkswagen Golf",
+            "prix": 28000
+        },
+        {
+            "nom": "Nissan Altima",
+            "prix": 29000
+        }
+    ]
+}
