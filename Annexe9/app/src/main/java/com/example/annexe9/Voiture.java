@@ -15,8 +15,6 @@ public class Voiture {
     }
 
 
-
-
     public Voiture(Builder b){
         this.nom = b.nom;
         this.prix = b.prix;
