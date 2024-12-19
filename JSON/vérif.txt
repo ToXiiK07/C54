@@ -1,0 +1,76 @@
+// Pour savoir si la réponse JSON est un objet ou un tableau
+
+String URL = "https://ton-url-ici.com";
+RequestQueue queue = Volley.newRequestQueue(this);
+
+JsonRequest jsonRequest = new JsonRequest
+        (Request.Method.GET, URL, null, new Response.Listener<Object>() {
+            @Override
+            public void onResponse(Object response) {
+                try {
+                    // Vérifier si la réponse est un JSONObject ou un JSONArray
+                    if (response instanceof JSONObject) {
+                        JSONObject jsonObject = (JSONObject) response;
+                        System.out.println("C'est un JSONObject !");
+                        // Traite le JSON comme un objet
+                        traiterJsonObject(jsonObject);
+
+                    } else if (response instanceof JSONArray) {
+                        JSONArray jsonArray = (JSONArray) response;
+                        System.out.println("C'est un JSONArray !");
+                        // Traite le JSON comme un tableau
+                        traiterJsonArray(jsonArray);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.err.println("Erreur : " + error.getMessage());
+            }
+        });
+
+queue.add(jsonRequest);
+
+
+// Pour objet 
+
+// Fonction pour traiter un JSONObject
+private void traiterJsonObject(JSONObject jsonObject) throws JSONException {
+    // Exemple : Récupérer une clé spécifique
+    String valeur = jsonObject.getString("cle");
+    System.out.println("Valeur dans l'objet : " + valeur);
+}
+
+// Fonction pour traiter un JSONArray
+private void traiterJsonArray(JSONArray jsonArray) throws JSONException {
+    for (int i = 0; i < jsonArray.length(); i++) {
+        JSONObject item = jsonArray.getJSONObject(i);
+        // Exemple : Afficher le contenu de chaque objet dans le tableau
+        System.out.println("Élément " + i + " : " + item.toString());
+    }
+}
+
+// Pour objet et array 
+
+// Fonction pour traiter un JSONObject
+private void traiterJsonObject(JSONObject jsonObject) throws JSONException {
+    // Exemple : Récupérer une clé spécifique
+    String valeur = jsonObject.getString("cle");
+    System.out.println("Valeur dans l'objet : " + valeur);
+}
+
+// Fonction pour traiter un JSONArray
+private void traiterJsonArray(JSONArray jsonArray) throws JSONException {
+    for (int i = 0; i < jsonArray.length(); i++) {
+        JSONObject item = jsonArray.getJSONObject(i);
+        // Exemple : Afficher le contenu de chaque objet dans le tableau
+        System.out.println("Élément " + i + " : " + item.toString());
+    }
+}
+
+
+
+
